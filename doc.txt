@@ -1,0 +1,7 @@
+04/01/2026 - Hanoi
+- Learn about the MORE adnanced (not the fullest) app structure
+- .env is the safe storage space to keep dev's info like api keys
+- .gitignore will make git ignores the sensitive files
+- learn how to parse dictionary and create dict
+- create city and weather classes with their own to_dict methods
+- learn how to unpacking a list/tuple in python

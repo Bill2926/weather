@@ -1,0 +1,13 @@
+weather-cli/
+├── weather_cli/
+│   ├── __init__.py
+│   ├── main.py              # Entry point - run the app
+│   ├── config.py            # Load API key from .env
+│   ├── api_client.py        # Talk to weather API
+│   ├── weather.py           # Weather data class
+│   └── formatter.py         # Display weather nicely
+├── .env                     # Your API key (secret)
+├── .env.example             # Example for others
+├── .gitignore
+├── requirements.txt
+└── README.md

@@ -1,3 +1,9 @@
+05/01/2026 - Hanoi
+- added UI, display obj methods
+- learn more about dict and did practical problems
+- learn how to use Path (pathlib)
+- learn about asyncio
+
 04/01/2026 - Hanoi
 - Learn about the MORE adnanced (not the fullest) app structure
 - .env is the safe storage space to keep dev's info like api keys

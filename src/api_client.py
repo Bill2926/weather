@@ -1,4 +1,5 @@
 import requests
+import asyncio
 from datetime import datetime
 # from config import Config
 
@@ -13,6 +14,7 @@ class API_Client:
         # send a GET method to the destination url
         response = requests.get(url)
         if response.status_code == 200:
+            asyncio.run(self._simulate_delay())
             response_dict = response.json()  # This returns a dictionary
             return self._parse_temp_dict(response_dict)
         else:
@@ -43,3 +45,8 @@ class API_Client:
 
         result_list = [city_dict, weather_dict]
         return result_list
+
+    async def _simulate_delay(self):
+        print('Fetching data, please wait... 🔍')
+        await asyncio.sleep(1.5)
+        print('Fetched Successfully ✅')

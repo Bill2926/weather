@@ -1,3 +1,8 @@
+08/01/2026 - Hanoi, Swinburne
+- added geo coding api to get coord
+- implemented meteo api to get the forecasted daily weather
+- created DayForeCastWeather class
+
 05/01/2026 - Hanoi
 - added UI, display obj methods
 - learn more about dict and did practical problems

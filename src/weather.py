@@ -12,7 +12,7 @@ class Weather:
         # Weather icon based on description
         weather_icon = self._get_weather_icon()
         
-        print("\n" + "=" * 50)
+        print("=" * 50)
         print(f"WEATHER REPORT")
         print("=" * 50)
         print(f"Description:   {self.description.capitalize()} {weather_icon}")

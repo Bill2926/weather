@@ -1,4 +1,6 @@
-fruit = ['apple', 'banana', 'mango']
+cars = {
+    
+}
 
 f = 'apple '
 

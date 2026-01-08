@@ -19,16 +19,25 @@ def find_by_city_name(city_name):
         
         if len(result_list) == 1:
             return result_list[0]['id']
+        elif len(result_list) == 0:
+            return False
         else:
             i = 1
             for r in result_list:
+                
                 print(f"{i}. {r['city_name']} / {r['country']}")
                 i += 1
             print('Please choose your prefered city:')
             choice = int(input("> "))
             if choice:
                 return result_list[choice-1]['id']
-                
+
+def find_by_city_code(city_code):
+    with open(city_list_path, 'r', encoding='utf-8') as f:
+        city_code_data = json.load(f)
+        for c in city_code_data:
+            if c["id"] == city_code:
+                return c["name"]
 
 class City:
     def __init__(self, name, country, coordinate):

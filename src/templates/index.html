@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index_style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Weather App</h1>
+            <p>Get weather information for any city</p>
+        </header>
+        <main>
+            <div class="choice-buttons">
+                <button class="btn active" id="currentBtn">Current Weather</button>
+                <button class="btn" id="forecastBtn">Forecast</button>
+            </div>
+
+            <div class="input-group">
+                <label for="cityInput">City Name:</label>
+                <input type="text" id="cityInput" placeholder="Enter city name">
+            </div>
+
+            <div class="input-group hidden" id="daysGroup">
+                <label for="daysInput">Days (1-16):</label>
+                <input type="number" id="daysInput" min="1" max="16" value="7">
+            </div>
+
+            <button class="btn btn-primary" id="submitBtn">Get Weather</button>
+
+            <div class="loading hidden" id="loading">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <div class="error hidden" id="error"></div>
+
+            <div class="results hidden" id="results">
+                <h2 id="resultsTitle"></h2>
+                <div id="resultsContent"></div>
+                <button class="btn" id="resetBtn">Search Again</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='index_script.js') }}"></script>
+</body>
+</html>

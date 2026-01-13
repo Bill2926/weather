@@ -1,10 +1,10 @@
-cars = {
-    
-}
+# print("Ban ten la gi: ")
+# name = input()
 
-f = 'apple '
+# name = input("Ban ten la gi: ")
+# print("Xin chao " + name)
 
-if f.strip() in fruit:
-    print('yes')
-else:
-    print('couldnt find it')
+# f"xin chao {tenbien}"
+
+
+print("Xin chao khuc\nBan co khoe khong?")

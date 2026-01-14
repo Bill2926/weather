@@ -136,6 +136,44 @@ input:focus {
     margin-top: 20px;
 }
 
+.city-selection {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #667eea;
+}
+
+.city-selection h2 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.city-option {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.city-option:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.city-option-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.city-option-country {
+    color: #666;
+    font-size: 14px;
+}
+
 .results {
     margin-top: 20px;
     padding-top: 20px;

@@ -8,6 +8,8 @@ const daysInput = document.getElementById('daysInput');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 const error = document.getElementById('error');
+const citySelection = document.getElementById('citySelection');
+const cityList = document.getElementById('cityList');
 const resultsTitle = document.getElementById('resultsTitle');
 const resultsContent = document.getElementById('resultsContent');
 const resetBtn = document.getElementById('resetBtn');
@@ -40,6 +42,7 @@ cityInput.addEventListener('keypress', (e) => {
 resetBtn.addEventListener('click', () => {
     results.classList.add('hidden');
     error.classList.add('hidden');
+    citySelection.classList.add('hidden');
     cityInput.value = '';
     cityInput.focus();
 });
@@ -66,15 +69,25 @@ async function handleSubmit() {
 }
 
 // Fetch current weather from Flask API (uses your Python classes)
-async function getCurrentWeather(city) {
+async function getCurrentWeather(city, cityId = null) {
     showLoading();
     
     try {
-        const response = await fetch(`/api/current-weather?city=${encodeURIComponent(city)}`);
+        let url = `/api/current-weather?city=${encodeURIComponent(city)}`;
+        if (cityId) {
+            url += `&city_id=${cityId}`;
+        }
+        
+        const response = await fetch(url);
         const data = await response.json();
         
         if (!data.success) {
-            showError(data.error);
+            if (data.ambiguous && data.cities) {
+                showCitySelection(data.cities, 'current');
+            } else {
+                // ERROR HEREEEE
+                showError(data.error);
+            }
             return;
         }
         
@@ -122,7 +135,6 @@ async function getCurrentWeather(city) {
                 </div>
             </div>
         `;
-        
         showResults();
     } catch (e) {
         showError('Failed to fetch weather data: ' + e.message);
@@ -130,15 +142,24 @@ async function getCurrentWeather(city) {
 }
 
 // Fetch forecast from Flask API (uses your Python classes)
-async function getForecast(city, days) {
+async function getForecast(city, days, cityId = null) {
     showLoading();
     
     try {
-        const response = await fetch(`/api/forecast?city=${encodeURIComponent(city)}&days=${days}`);
+        let url = `/api/forecast?city=${encodeURIComponent(city)}&days=${days}`;
+        if (cityId) {
+            url += `&city_id=${cityId}`;
+        }
+        
+        const response = await fetch(url);
         const data = await response.json();
         
         if (!data.success) {
-            showError(data.error);
+            if (data.ambiguous && data.cities) {
+                showCitySelection(data.cities, 'forecast', days);
+            } else {
+                showError(data.error)
+            }
             return;
         }
         
@@ -149,30 +170,19 @@ async function getForecast(city, days) {
         data.forecasts.forEach((forecast, index) => {
             html += `
                 <div class="forecast-day">
-                    <h3>Day ${index + 1} - ${forecast.date}</h3>
-                    <div class="info-item">
-                        <span class="info-label">Max Temperature:</span>
-                        <span class="info-value">${forecast.max_temp}°C</span>
-                    </div>
+                    <h3>Day ${index + 1} - ${forecast.time_stamp}</h3>
                     <div class="info-item">
                         <span class="info-label">Min Temperature:</span>
-                        <span class="info-value">${forecast.min_temp}°C</span>
+                        <span class="info-value">${forecast.temp_min}°C</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Max Temperature:</span>
+                        <span class="info-value">${forecast.temp_max}°C</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Condition:</span>
-                        <span class="info-value">${forecast.condition}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Rain Chance:</span>
-                        <span class="info-value">${forecast.rain_chance}%</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Humidity:</span>
-                        <span class="info-value">${forecast.humidity}%</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Wind Speed:</span>
-                        <span class="info-value">${forecast.wind_speed} km/h</span>
+                        <span class="info-value">${forecast.weather_description}</span>
                     </div>
                 </div>
             `;
@@ -186,15 +196,67 @@ async function getForecast(city, days) {
 }
 
 // UI Helper functions
+function showCitySelection(cities, type, days = null) {
+    hideLoading();
+    citySelection.classList.remove('hidden');
+    results.classList.add('hidden');
+    error.classList.add('hidden');
+    let html = '';
+    if (type === 'current') {
+        cities.forEach((city, index) => {
+        html += `
+            <div class="city-option" data-index="${index}" data-id="${city.id}">
+                <div class="city-option-name">${index + 1}. ${city.city_name}</div>
+                <div class="city-option-country">${city.country}</div>
+            </div>
+        `;
+        });
+    } else if (type === 'forecast') {
+        cities.forEach((city, index) => {
+        city_coords = `${city.lat},${city.lon}`;
+        html += `
+            <div class="city-option" data-index="${index}" data-id="${city_coords}">
+                <div class="city-option-name">${index + 1}. ${city.city_name}</div>
+                <div class="city-option-country">${city.country}</div>
+            </div>
+        `;
+        });
+    }
+    
+    cityList.innerHTML = html;
+    
+    // Add click handlers
+    document.querySelectorAll('.city-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const cityId = option.getAttribute('data-id');
+            const cityName = cityInput.value.trim();
+            citySelection.classList.add('hidden');
+            
+            if (type === 'current') {
+                // getCurrentWeather(cityName, cityId);
+                getCurrentWeather(cityName, cityId);
+            } else if (type === 'forecast') {
+                getForecast(cityName, days, cityId); // id for this is geo coding coords
+            }
+        });
+    });
+}
+
 function showLoading() {
     loading.classList.remove('hidden');
     results.classList.add('hidden');
     error.classList.add('hidden');
+    citySelection.classList.add('hidden');
+}
+
+function hideLoading() {
+    loading.classList.add('hidden');
 }
 
 function showResults() {
-    loading.classList.add('hidden');
+    hideLoading();
     results.classList.remove('hidden');
+    citySelection.classList.add('hidden');
 }
 
 function showError(message) {
@@ -202,6 +264,7 @@ function showError(message) {
     error.classList.remove('hidden');
     results.classList.add('hidden');
     loading.classList.add('hidden');
+    citySelection.classList.add('hidden');
 }
 
 cityInput.focus();

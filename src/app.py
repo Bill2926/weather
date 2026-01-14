@@ -19,17 +19,30 @@ def index():
 def get_current_weather():
     # Parse the value passed to the URL param
     city_name = request.args.get('city')
+    # When retrying after ambiguous city selection
+    city_id = request.args.get('city_id', type=int)
+
+    if not city_name:
+        return jsonify({'success': False, 'error': 'City name required'}), 400
 
     # Find the city code
     city_code = find_by_city_name(city_name)
-    if not city_name:
-        return jsonify({'success': False, 'error': 'City name required'}), 400
+    if not city_code: 
+        return jsonify({'success': False, 'error': 'City not found'}), 404
+    elif city_id:
+        city_code = city_id
+    elif isinstance(city_code, list):
+        return jsonify({
+            'success': False,
+            'ambiguous': True,
+            'cities': city_code
+        })
     
     try:
         result = api_client.get_current_weather(city_code)
         city_dict, weather_dict = result
-        # city = City.from_dict(city_dict)
-        # weather = Weather.from_dict(weather_dict)
+            # city = City.from_dict(city_dict)
+            # weather = Weather.from_dict(weather_dict)
         return jsonify({
             'success': True,
             'city': {
@@ -47,6 +60,47 @@ def get_current_weather():
                 'wind_speed': weather_dict['wind_speed']
             }
         })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route("/api/forecast", methods=["GET"])
+def get_forecast_weather():
+    # Parse the value passed to the URL param
+    city_name = request.args.get('city')
+    day_range = request.args.get('days', default=5, type=int)
+    city_coords = request.args.get('city_id')
+
+    coord = api_client.get_geocoding(city_name)
+    if city_coords:
+        lat, lon = city_coords.split(',')
+        coord = (float(lat), float(lon))
+        
+    if not coord:
+        return jsonify({
+            'success': False,
+            'error': f'Could not find city {city_name}.'
+        }), 404
+    
+    if isinstance(coord, list):
+        return jsonify({
+            'success': False,
+            'ambiguous': True,
+            'cities': coord,
+        })
+
+    try:
+        forecast_data = api_client.get_day_forecast(coord, day_range)
+        if not forecast_data:
+            return jsonify({
+                'success': False,
+                'error': f'Could not fetch forecast for {city_name}.'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'forecasts': forecast_data
+        })
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 

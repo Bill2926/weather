@@ -2,6 +2,10 @@ import requests
 import asyncio
 from datetime import datetime
 from config import Config
+from pathlib import Path
+import json
+
+wmo_codes_path = Path(__file__).parent.parent /'external_data'/'wmo_weather_codes.json'
 
 class API_Client:
     def __init__(self, base_url, daily_url, geocoding_url, api_key):
@@ -23,7 +27,7 @@ class API_Client:
             print('There must be a problem.')
     
     def get_geocoding(self, city_name):
-        url = f"{self.geocoding_url}/direct?q={city_name}&appid={self.api_key}"
+        url = f"{self.geocoding_url}/direct?q={city_name}&limit=5&appid={self.api_key}"
         response = requests.get(url)
         if response.status_code == 200:
             response_dict = response.json()  # This returns a dictionary
@@ -43,18 +47,7 @@ class API_Client:
                         "lat": i["lat"],
                         "lon": i["lon"]
                     })
-                
-                for r in result_list:
-                    i = 1
-                    print(f"{i}. {r['city_name']} / {r['country']}")
-                    i += 1
-
-                print('Please choose your prefered city:')
-                choice = int(input("> "))
-                if choice:
-                    selected = result_list[choice-1]
-                    coord = (selected['lat'], selected['lon'])
-                    return coord
+                return result_list
         else:
             print('There must be a problem.')
     
@@ -109,9 +102,17 @@ class API_Client:
 
         x = zip(time_stamps, weather_code, temp_min, temp_max)
         for tuple in x:
+            weather_code = str(tuple[1])
+            with open(wmo_codes_path, "r", encoding="utf-8") as f:
+                wmo_codes_data = json.load(f)
+                if weather_code in wmo_codes_data["weather_codes"]:
+                    weather_description = wmo_codes_data["weather_codes"][weather_code]["description"]
+                else:
+                    weather_description = "Unknown weather"
+
             forecast_day = {
                 "time_stamp": tuple[0],
-                "weather_code": tuple[1],
+                "weather_description": weather_description,
                 "temp_min": tuple[2],
                 "temp_max": tuple[3]
             }
@@ -123,13 +124,3 @@ class API_Client:
         print('Fetching data, please wait... 🔍')
         await asyncio.sleep(1.5)
         print('Fetched Successfully ✅')
-
-
-# config = Config.load()
-# api = API_Client(config.base_url, config.daily_url, config.geocoding_url, config.api_key)
-# coord = api.get_geocoding("1581130")
-# # coord = api.get_geocoding("18093")
-# list = api.get_day_forecast(coord, "3")
-
-# print(list)
-# print(coord)

@@ -12,6 +12,7 @@
             <h1>🌤️ Weather App</h1>
             <p>Get weather information for any city</p>
         </header>
+
         <main>
             <div class="choice-buttons">
                 <button class="btn active" id="currentBtn">Current Weather</button>
@@ -36,6 +37,11 @@
             </div>
 
             <div class="error hidden" id="error"></div>
+
+            <div class="city-selection hidden" id="citySelection">
+                <h2>Multiple cities found. Please choose:</h2>
+                <div id="cityList"></div>
+            </div>
 
             <div class="results hidden" id="results">
                 <h2 id="resultsTitle"></h2>

@@ -22,15 +22,16 @@ def find_by_city_name(city_name):
         elif len(result_list) == 0:
             return False
         else:
-            i = 1
-            for r in result_list:
+            return result_list
+            # i = 1
+            # for r in result_list:
                 
-                print(f"{i}. {r['city_name']} / {r['country']}")
-                i += 1
-            print('Please choose your prefered city:')
-            choice = int(input("> "))
-            if choice:
-                return result_list[choice-1]['id']
+            #     print(f"{i}. {r['city_name']} / {r['country']}")
+            #     i += 1
+            # print('Please choose your prefered city:')
+            # choice = int(input("> "))
+            # if choice:
+            #     return result_list[choice-1]['id']
 
 def find_by_city_code(city_code):
     with open(city_list_path, 'r', encoding='utf-8') as f:
